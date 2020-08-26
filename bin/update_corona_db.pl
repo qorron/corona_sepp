@@ -117,10 +117,12 @@ if ( $inject && $inject_ok ) {
                 $db->select( 'districts', 'DISTINCT etag', { etag => $file_etag } )
                 ->hashes;
 
-            #warn __PACKAGE__.':'.__LINE__.$".Data::Dumper->Dump([\@seen], ['seen']);
-            #warn "skipping $file_etag" if @seen;
-            next if @seen;
-            warn $file unless $quiet;
+            if (@seen) {
+                warn
+                    "skipping $file because etag: '$file_etag' already in db.";
+                next;
+            }
+            say $file unless $quiet;
 
             # Read a Zip file
             my $zip = Archive::Zip->new();
