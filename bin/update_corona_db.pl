@@ -11,6 +11,7 @@ use Path::Tiny;
 use Archive::Zip qw( :ERROR_CODES :CONSTANTS );
 use Text::CSV qw( csv );
 use DBIx::Simple;
+use Encode;
 
 my $url = 'https://info.gesundheitsministerium.at/data/data.zip';
 my $now = DateTime->now->iso8601;
@@ -24,6 +25,7 @@ my $db_user     = $ENV{CORONA_DB_USER};
 my $db_pass     = $ENV{CORONA_DB_PASS};
 my $download    = 0;
 my $inject      = 0;
+my $use_PgPP    = '';
 
 GetOptions(
     "dir=s"    => \$dir,            # zip-file location
@@ -35,7 +37,10 @@ GetOptions(
     'pass=s'   => \$db_pass,
     'download' => \$download,
     'inject'   => \$inject,
+    'use_pgpp' => \$use_PgPP,
 ) or die("Error in command line arguments\n");
+
+$use_PgPP = 'PP' if $use_PgPP;
 
 
 my $etag;
@@ -79,7 +84,7 @@ if ( $inject && $inject_ok ) {
 
     # Connecting to a MySQL database
     my $db = DBIx::Simple->connect(
-        "DBI:Pg:database=$db_name" .    # DBI source specification
+        "DBI:Pg${use_PgPP}:database=$db_name" .    # DBI source specification
             $db_host,
         $db_user,                       # Username and password
         $db_pass,
@@ -149,7 +154,9 @@ if ( $inject && $inject_ok ) {
                 }
                 $row->{anzahl_inzidenz} =~ s/,/./;
                 eval {
-                $db->insert( 'districts', { %$row, etag => $file_etag } );
+                    $row->{bezirk} = encode( 'utf8', $row->{bezirk} )
+                        if $use_PgPP;
+                    $db->insert( 'districts', { %$row, etag => $file_etag } );
                 };
                 if ($@) {
                     warn $@;

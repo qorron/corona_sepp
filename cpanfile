@@ -7,3 +7,5 @@ requires 'Archive::Zip';
 requires 'Text::CSV';
 requires 'DBIx::Simple';
 requires 'DBD::Pg';
+requires 'DBD::PgPP';
+requires 'Encode';
