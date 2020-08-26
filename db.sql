@@ -36,3 +36,14 @@ create or replace view district_diff_14 as
 		where age(date) <= '14 days' 
 		group by bezirk, gkz;
 
+
+grant INSERT ON districts TO corona_editor_role;
+grant SELECT ON districts TO corona_editor_role; 
+grant SELECT ON districts TO corona_viewer_role;
+grant SELECT ON district_date TO corona_viewer_role;
+grant SELECT ON district_diff TO corona_viewer_role;
+grant SELECT ON district_diff_1 TO corona_viewer_role;
+grant SELECT ON district_diff_14 TO corona_viewer_role;
+grant SELECT ON district_diff_5 TO corona_viewer_role;
+grant SELECT ON district_max TO corona_viewer_role;
+

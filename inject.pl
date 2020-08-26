@@ -9,24 +9,36 @@ use Text::CSV qw( csv );
 use DBIx::Simple;
 use Getopt::Long;
 
-# Connecting to a MySQL database
-my $db = DBIx::Simple->connect(
-	'DBI:Pg:database=corona',    # DBI source specification
-	$ENV{CORONA_DB_USER},        # Username and password
-	$ENV{CORONA_DB_PASS},
-	{ RaiseError => 1 }          # Additional options
-);
-
 my $dir = '~/tmp/corona';
-
 my $quiet       = 0;
 my $search_etag = '*';
+my $db_host = '';
+my $db_name = 'corona';
+my $db_user = $ENV{CORONA_DB_USER};
+my $db_pass = $ENV{CORONA_DB_PASS};
 
 GetOptions(
 	"etag=s" => \$search_etag,    # etag to inject one specific file
 	"dir=s"  => \$dir,            # zip-file location
 	"quiet"  => \$quiet,          # flag
+    'host=s' => \$db_host,
+    'name=s' => \$db_name,
+    'user=s' => \$db_user,
+    'pass=s' => \$db_pass,
 ) or die("Error in command line arguments\n");
+
+$db_host = ";host=$db_host" if $db_host;
+
+# Connecting to a MySQL database
+my $db = DBIx::Simple->connect(
+	"DBI:Pg:database=$db_name".    # DBI source specification
+    $db_host,
+	$db_user,        # Username and password
+	$db_pass,
+	{ RaiseError => 1 }          # Additional options
+);
+
+
 
 my @etagged_zip_files;
 my $search_pattern = '';
