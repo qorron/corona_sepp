@@ -58,10 +58,13 @@ create or replace view district_7d_incidence as
         where age(b.date, a.date) <= '7 days' and age(b.date, a.date) > '0 days' and a.gkz = b.gkz
         group by a.bezirk, a.gkz, b.date;
 
-
-
-
-
-
-
+grant INSERT ON districts TO corona_editor_role;
+grant SELECT ON districts TO corona_editor_role; 
+grant SELECT ON districts TO corona_viewer_role;
+grant SELECT ON district_date TO corona_viewer_role;
+grant SELECT ON district_diff TO corona_viewer_role;
+grant SELECT ON district_diff_1 TO corona_viewer_role;
+grant SELECT ON district_diff_14 TO corona_viewer_role;
+grant SELECT ON district_diff_5 TO corona_viewer_role;
+grant SELECT ON district_max TO corona_viewer_role;
 
