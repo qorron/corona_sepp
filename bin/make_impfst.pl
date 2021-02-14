@@ -8,7 +8,9 @@ use DBIx::Simple;
 use Date::Parse;
 use POSIX qw(strftime);
 use File::Slurper qw(write_text);
+use File::Touch;
 
+my $tmp_marker = '/tmp/impfst_done_for_today';
 my $file = '/var/www/impfst.at/index.html';
 
 # Connecting to a MySQL database
@@ -20,6 +22,7 @@ my $db = DBIx::Simple->connect(
 );
 my @fresh_data = $db->select( 'impfst_28d_done', 'teilgeimpfte_est_date', { BundeslandID => 10 } )->hashes;
 if (@fresh_data) {
+	exit if -e $tmp_marker;
 	my $time = str2time( $fresh_data[0]->{teilgeimpfte_est_date} );
 
 	#say strftime('%d.%m.%Y', localtime($time));
@@ -34,14 +37,16 @@ Based upon the data available from <a href="https://orf.at/">orf.at</a> all Aust
 <h1>$done_date</h1>
 This was calculated extrapolating the vaccination progress over the last 28 days.<br>
 Last updated: $now_date (once a day unless something goes wrong)
-This site is not affiliated with anyone and was only created to take my mind off the fact that a 'wird scho nix sein' person I recently met was tested positive the very next day. Source: <a href="https://github.com/qorron/corona_sepp">github</a>
+This site is not affiliated with anyone and was only created to take my mind off the fact that a 'wird scho nix sein' person I recently met was tested positive the very next day. Source: <a href="https://github.com/qorron/corona_sepp">github</a><br>
+Update: just got tested negative on day 3 after the incident. so: yay!
 </body>
 </html>
 XXX
 	write_text( $file, $html );
-
+	touch($tmp_marker);
 }
 else {
+	unlink $tmp_marker if -e $tmp_marker;
 	warn "update failed!";
 }
 
