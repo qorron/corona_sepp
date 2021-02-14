@@ -68,3 +68,122 @@ grant SELECT ON district_diff_14 TO corona_viewer_role;
 grant SELECT ON district_diff_5 TO corona_viewer_role;
 grant SELECT ON district_max TO corona_viewer_role;
 
+
+drop table impfst cascade;
+create table impfst (
+	Datum timestamp with time zone not null,
+	BundeslandID integer not null,
+	Bevölkerung integer,
+	Name text,
+	EingetrageneImpfungen integer,
+	EingetrageneImpfungenPro100 float,
+	Teilgeimpfte integer,
+	TeilgeimpftePro100 float,
+	Vollimmunisierte integer,
+	VollimmunisiertePro100 float,
+	Gruppe_24_M_1 integer,
+	Gruppe_24_W_1 integer,
+	Gruppe_24_D_1 integer,
+	Gruppe_25_34_M_1 integer,
+	Gruppe_25_34_W_1 integer,
+	Gruppe_25_34_D_1 integer,
+	Gruppe_35_44_M_1 integer,
+	Gruppe_35_44_W_1 integer,
+	Gruppe_35_44_D_1 integer,
+	Gruppe_45_54_M_1 integer,
+	Gruppe_45_54_W_1 integer,
+	Gruppe_45_54_D_1 integer,
+	Gruppe_55_64_M_1 integer,
+	Gruppe_55_64_W_1 integer,
+	Gruppe_55_64_D_1 integer,
+	Gruppe_65_74_M_1 integer,
+	Gruppe_65_74_W_1 integer,
+	Gruppe_65_74_D_1 integer,
+	Gruppe_75_84_M_1 integer,
+	Gruppe_75_84_W_1 integer,
+	Gruppe_75_84_D_1 integer,
+	Gruppe__84_M_1 integer,
+	Gruppe__84_W_1 integer,
+	Gruppe__84_D_1 integer,
+	Gruppe_24_M_2 integer,
+	Gruppe_24_W_2 integer,
+	Gruppe_24_D_2 integer,
+	Gruppe_25_34_M_2 integer,
+	Gruppe_25_34_W_2 integer,
+	Gruppe_25_34_D_2 integer,
+	Gruppe_35_44_M_2 integer,
+	Gruppe_35_44_W_2 integer,
+	Gruppe_35_44_D_2 integer,
+	Gruppe_45_54_M_2 integer,
+	Gruppe_45_54_W_2 integer,
+	Gruppe_45_54_D_2 integer,
+	Gruppe_55_64_M_2 integer,
+	Gruppe_55_64_W_2 integer,
+	Gruppe_55_64_D_2 integer,
+	Gruppe_65_74_M_2 integer,
+	Gruppe_65_74_W_2 integer,
+	Gruppe_65_74_D_2 integer,
+	Gruppe_75_84_M_2 integer,
+	Gruppe_75_84_W_2 integer,
+	Gruppe_75_84_D_2 integer,
+	Gruppe__84_M_2 integer,
+	Gruppe__84_W_2 integer,
+	Gruppe__84_D_2 integer,
+	EingetrageneImpfungenBioNTechPfizer_1 integer,
+	EingetrageneImpfungenModerna_1 integer,
+	EingetrageneImpfungenAstraZeneca_1 integer,
+	EingetrageneImpfungenBioNTechPfizer_2 integer,
+	EingetrageneImpfungenModerna_2 integer,
+	EingetrageneImpfungenAstraZeneca_2 integer,
+	unique (Datum, BundeslandID)
+);
+
+create or replace view impfst_7_days_ago as
+    select * from impfst where age(date_trunc('day', Datum)) = '8 days' ;
+
+create or replace view impfst_28_days_ago as
+    select * from impfst where age(date_trunc('day', Datum)) = '29 days' ;
+
+create or replace view impfst_now as
+    select * from impfst where age(date_trunc('day', Datum)) = '1 day' ;
+
+create or replace view impfst_7d_est as
+	select * , 
+		(Bevölkerung - EingetrageneImpfungen) * 7 / EingetrageneImpfungen_diff as EingetrageneImpfungen_est_days,
+		(100 - EingetrageneImpfungenPro100) * 7 / EingetrageneImpfungenPro100_diff as EingetrageneImpfungenPro100_est_days,
+		(Bevölkerung - Teilgeimpfte) * 7 / Teilgeimpfte_diff as Teilgeimpfte_est_days,
+		(100 - TeilgeimpftePro100) * 7 / TeilgeimpftePro100_diff as TeilgeimpftePro100_est_days,
+		(Bevölkerung - Vollimmunisierte) * 7 / Vollimmunisierte_diff as Vollimmunisierte_est_days,
+		(100 - VollimmunisiertePro100) * 7 / VollimmunisiertePro100_diff as VollimmunisiertePro100_est_days
+ from impfst_7d_diff;
+
+create or replace view impfst_7d_done as
+	select *,
+		now() + '1 day'::interval * EingetrageneImpfungen_est_days as EingetrageneImpfungen_est_date,
+		now() + '1 day'::interval * EingetrageneImpfungenPro100_est_days as EingetrageneImpfungenPro100_est_date,
+		now() + '1 day'::interval * Teilgeimpfte_est_days as Teilgeimpfte_est_date,
+		now() + '1 day'::interval * TeilgeimpftePro100_est_days as TeilgeimpftePro100_est_date,
+		now() + '1 day'::interval * Vollimmunisierte_est_days as Vollimmunisierte_est_date,
+		now() + '1 day'::interval * VollimmunisiertePro100_est_days as VollimmunisiertePro100_est_date
+from impfst_7d_est;
+
+create or replace view impfst_28d_est as
+	select * , 
+		(Bevölkerung - EingetrageneImpfungen) * 28 / EingetrageneImpfungen_diff as EingetrageneImpfungen_est_days,
+		(100 - EingetrageneImpfungenPro100) * 28 / EingetrageneImpfungenPro100_diff as EingetrageneImpfungenPro100_est_days,
+		(Bevölkerung - Teilgeimpfte) * 28 / Teilgeimpfte_diff as Teilgeimpfte_est_days,
+		(100 - TeilgeimpftePro100) * 28 / TeilgeimpftePro100_diff as TeilgeimpftePro100_est_days,
+		(Bevölkerung - Vollimmunisierte) * 28 / Vollimmunisierte_diff as Vollimmunisierte_est_days,
+		(100 - VollimmunisiertePro100) * 28 / VollimmunisiertePro100_diff as VollimmunisiertePro100_est_days
+ from impfst_28d_diff;
+
+create or replace view impfst_28d_done as
+	select *,
+		now() + '1 day'::interval * EingetrageneImpfungen_est_days as EingetrageneImpfungen_est_date,
+		now() + '1 day'::interval * EingetrageneImpfungenPro100_est_days as EingetrageneImpfungenPro100_est_date,
+		now() + '1 day'::interval * Teilgeimpfte_est_days as Teilgeimpfte_est_date,
+		now() + '1 day'::interval * TeilgeimpftePro100_est_days as TeilgeimpftePro100_est_date,
+		now() + '1 day'::interval * Vollimmunisierte_est_days as Vollimmunisierte_est_date,
+		now() + '1 day'::interval * VollimmunisiertePro100_est_days as VollimmunisiertePro100_est_date
+from impfst_28d_est;
+
