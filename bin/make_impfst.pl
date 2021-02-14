@@ -38,7 +38,8 @@ Based upon the data available from <a href="https://orf.at/">orf.at</a> all Aust
 This was calculated extrapolating the vaccination progress over the last 28 days.<br>
 Last updated: $now_date (once a day unless something goes wrong)
 This site is not affiliated with anyone and was only created to take my mind off the fact that a 'wird scho nix sein' person I recently met was tested positive the very next day. Source: <a href="https://github.com/qorron/corona_sepp">github</a><br>
-Update: just got tested negative on day 3 after the incident. so: yay!
+Update: just got tested negative on day 3 after the incident. so: yay!<br><br>
+Oh, and see what may happen if you <a href="http://impfst.net">impfst.net</a>.
 </body>
 </html>
 XXX
