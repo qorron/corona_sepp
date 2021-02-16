@@ -13,6 +13,7 @@ my $url = 'https://pipe.orf.at/corona-dashboard/data/timeline-eimpfpass.csv?orig
 
 my $content = encode('utf8',get($url));
 $content =~ s/1;Gruppe<24_M_1;Gruppe<24_W_1;Gruppe<24_D_1/1;Gruppe<24_M_2;Gruppe<24_W_2;Gruppe<24_D_2/; # fix faulty headers
+$content =~ s/ö/oe/; # avoid non-ascii
 $content =~ s/[<>-]/_/g; # not screw up sql
 
 # Connecting to a MySQL database
@@ -32,6 +33,7 @@ my $aoh = csv(
 );    # as array of hash
 
 my @seen;
+warn "got no rows" unless @$aoh;
 for my $row (@$aoh) {
 	@seen =
 		$db->select( 'impfst', 'DISTINCT Datum', { Datum => $row->{datum}, BundeslandID => $row->{bundeslandid} } )->hashes;
@@ -45,6 +47,6 @@ for my $row (@$aoh) {
 		$qt_row->{qq'"$key"'} = $row->{$key};
 		delete $row->{$key} if $row->{$key} eq ''; # integer
 	}
-	warn __PACKAGE__.':'.__LINE__.$".Data::Dumper->Dump([\$row], ['row']);
+	#warn __PACKAGE__.':'.__LINE__.$".Data::Dumper->Dump([\$row], ['row']);
 	$db->insert( 'impfst', {%$row} );
 }
