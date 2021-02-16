@@ -73,7 +73,7 @@ drop table impfst cascade;
 create table impfst (
 	Datum timestamp with time zone not null,
 	BundeslandID integer not null,
-	Bevölkerung integer,
+	Bevoelkerung integer,
 	Name text,
 	EingetrageneImpfungen integer,
 	EingetrageneImpfungenPro100 float,
@@ -149,11 +149,11 @@ create or replace view impfst_now as
 
 create or replace view impfst_7d_est as
 	select * , 
-		(Bevölkerung - EingetrageneImpfungen) * 7 / EingetrageneImpfungen_diff as EingetrageneImpfungen_est_days,
+		(Bevoelkerung - EingetrageneImpfungen) * 7 / EingetrageneImpfungen_diff as EingetrageneImpfungen_est_days,
 		(100 - EingetrageneImpfungenPro100) * 7 / EingetrageneImpfungenPro100_diff as EingetrageneImpfungenPro100_est_days,
-		(Bevölkerung - Teilgeimpfte) * 7 / Teilgeimpfte_diff as Teilgeimpfte_est_days,
+		(Bevoelkerung - Teilgeimpfte) * 7 / Teilgeimpfte_diff as Teilgeimpfte_est_days,
 		(100 - TeilgeimpftePro100) * 7 / TeilgeimpftePro100_diff as TeilgeimpftePro100_est_days,
-		(Bevölkerung - Vollimmunisierte) * 7 / Vollimmunisierte_diff as Vollimmunisierte_est_days,
+		(Bevoelkerung - Vollimmunisierte) * 7 / Vollimmunisierte_diff as Vollimmunisierte_est_days,
 		(100 - VollimmunisiertePro100) * 7 / VollimmunisiertePro100_diff as VollimmunisiertePro100_est_days
  from impfst_7d_diff;
 
@@ -169,11 +169,11 @@ from impfst_7d_est;
 
 create or replace view impfst_28d_est as
 	select * , 
-		(Bevölkerung - EingetrageneImpfungen) * 28 / EingetrageneImpfungen_diff as EingetrageneImpfungen_est_days,
+		(Bevoelkerung - EingetrageneImpfungen) * 28 / EingetrageneImpfungen_diff as EingetrageneImpfungen_est_days,
 		(100 - EingetrageneImpfungenPro100) * 28 / EingetrageneImpfungenPro100_diff as EingetrageneImpfungenPro100_est_days,
-		(Bevölkerung - Teilgeimpfte) * 28 / Teilgeimpfte_diff as Teilgeimpfte_est_days,
+		(Bevoelkerung - Teilgeimpfte) * 28 / Teilgeimpfte_diff as Teilgeimpfte_est_days,
 		(100 - TeilgeimpftePro100) * 28 / TeilgeimpftePro100_diff as TeilgeimpftePro100_est_days,
-		(Bevölkerung - Vollimmunisierte) * 28 / Vollimmunisierte_diff as Vollimmunisierte_est_days,
+		(Bevoelkerung - Vollimmunisierte) * 28 / Vollimmunisierte_diff as Vollimmunisierte_est_days,
 		(100 - VollimmunisiertePro100) * 28 / VollimmunisiertePro100_diff as VollimmunisiertePro100_est_days
  from impfst_28d_diff;
 

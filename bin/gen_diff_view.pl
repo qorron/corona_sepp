@@ -15,7 +15,7 @@ Name
 my @diff = 
 qw(
 Datum
-Bevölkerung
+Bevoelkerung
 EingetrageneImpfungen
 EingetrageneImpfungenPro100
 Teilgeimpfte

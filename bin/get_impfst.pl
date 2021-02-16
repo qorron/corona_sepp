@@ -16,9 +16,12 @@ $content =~ s/1;Gruppe<24_M_1;Gruppe<24_W_1;Gruppe<24_D_1/1;Gruppe<24_M_2;Gruppe
 $content =~ s/ö/oe/; # avoid non-ascii
 $content =~ s/[<>-]/_/g; # not screw up sql
 
+my $host = '';
+$host = ';host=127.0.0.1' if $ENV{CORONA_DB_USER} && $ENV{CORONA_DB_PASS};
+
 # Connecting to a MySQL database
 my $db = DBIx::Simple->connect(
-    'DBI:Pg:database=corona;host=127.0.0.1',    # DBI source specification
+    'DBI:Pg:database=corona'.$host,    # DBI source specification
     $ENV{CORONA_DB_USER},        # Username and password
     $ENV{CORONA_DB_PASS},
     { RaiseError => 1 }          # Additional options
